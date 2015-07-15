@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/netxfly/hyperfox/proxy"
+	"github.com/netxfly/Transparent-Proxy-Scanner/hyperfox"
 )
 
 const listenHTTPAddr = `127.0.0.1:37400`

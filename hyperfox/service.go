@@ -37,7 +37,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/netxfly/hyperfox/tools/capture"
+	"github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/tools/capture"
 	"menteslibres.net/gosexy/to"
 	"upper.io/db"
 )

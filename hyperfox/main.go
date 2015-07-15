@@ -25,10 +25,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/netxfly/hyperfox/proxy"
-	"github.com/netxfly/hyperfox/tools/capture"
+	"github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/proxy"
+	"github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/tools/capture"
 	"strings"
-	// "github.com/netxfly/hyperfox/tools/logger"
+	// "github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/tools/logger"
 	"github.com/toolkits/slice"
 	"log"
 	"net/http"

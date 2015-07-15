@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/netxfly/hyperfox/proxy"
+	"github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/proxy"
 )
 
 func chunk(value string) string {
