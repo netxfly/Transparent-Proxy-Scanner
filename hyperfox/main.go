@@ -31,10 +31,10 @@ import (
 	// "github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/tools/logger"
 	"github.com/toolkits/slice"
 	"log"
-	"net/http"
+	// "net/http"
 	"net/url"
 	"os"
-	"time"
+	// "time"
 	"upper.io/db"
 	"upper.io/db/mongo"
 )
