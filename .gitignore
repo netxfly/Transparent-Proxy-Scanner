@@ -1,4 +1,4 @@
 *.swp
 *.db
-hyperfox
+.idea
 certs/
