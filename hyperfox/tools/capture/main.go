@@ -13,10 +13,10 @@ type Header struct {
 }
 
 type Response struct {
-	ID            uint      `json:"id" db:",omitempty,json"`
+	//	ID            uint      `json:"id" db:",omitempty,json"`
 	Origin        string    `json:"origin" db:",json"`
 	Method        string    `json:"method" db:",json"`
-	Status        int       `json:"status" db:",json"`
+	StatusCode    int       `json:"status_code" db:",json"`
 	ContentType   string    `json:"content_type" db:",json"`
 	ContentLength uint      `json:"content_length" db:",json"`
 	Host          string    `json:"host" db:",json"`
@@ -30,6 +30,7 @@ type Response struct {
 	DateStart     time.Time `json:"date_start" db:",json"`
 	DateEnd       time.Time `json:"date_end" db:",json"`
 	TimeTaken     int64     `json:"time_taken" db:",json"`
+	Status        int       `json:"status" db:",json"`
 }
 
 func (h Header) MarshalDB() (interface{}, error) {
@@ -61,7 +62,7 @@ func (cwc *CaptureWriteCloser) Close() error {
 	r := Response{
 		Origin:        cwc.r.Request.RemoteAddr,
 		Method:        cwc.r.Request.Method,
-		Status:        cwc.r.StatusCode,
+		StatusCode:    cwc.r.StatusCode,
 		ContentType:   http.DetectContentType(cwc.Bytes()),
 		ContentLength: uint(cwc.Len()),
 		Host:          cwc.r.Request.URL.Host,
@@ -75,6 +76,7 @@ func (cwc *CaptureWriteCloser) Close() error {
 		DateStart:     cwc.s,
 		DateEnd:       now,
 		TimeTaken:     now.UnixNano() - cwc.s.UnixNano(),
+		Status:        0,
 	}
 
 	cwc.c <- r

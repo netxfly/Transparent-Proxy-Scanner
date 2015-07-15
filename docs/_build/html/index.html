@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>基于vpn和透明代理的web漏洞扫描器的实现 &mdash; 基于vpn和透明代理的web漏洞扫描器的实现 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="基于vpn和透明代理的web漏洞扫描器的实现 0.1 documentation" href="#"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="#" class="icon icon-home"> 基于vpn和透明代理的web漏洞扫描器的实现
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">基于vpn和透明代理的web漏洞扫描器的实现</a><ul>
+<li><a class="reference internal" href="#id1">概述</a></li>
+<li><a class="reference internal" href="#id2">架构说明</a></li>
+<li><a class="reference internal" href="#id3">透明代理的实现</a><ul>
+<li><a class="reference internal" href="#id4">依赖包安装</a></li>
+<li><a class="reference internal" href="#id5">透明代理的部分实现代码</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">基于vpn和透明代理的web漏洞扫描器的实现</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>基于vpn和透明代理的web漏洞扫描器的实现</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="vpnweb">
+<h1>基于vpn和透明代理的web漏洞扫描器的实现<a class="headerlink" href="#vpnweb" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>概述<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Transparent-Proxy-Scanner是一个基于vpn和透明代理的web漏洞扫描器，本文是vpn + 透明代理式的web漏洞扫描器的实现的简单说明。
+用户连接vpn后访问网站时就会把网站的请求与响应信息保存到mongodb中，然后web扫描器从数据库中读取请求信息并进行扫描。</p>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>架构说明<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/transparent.png" src="_images/transparent.png" />
+</div>
+<div class="section" id="id3">
+<h2>透明代理的实现<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>透明代理是在 <code class="docutils literal"><span class="pre">https://github.com/xiam/hyperfox</span></code> 这个项目的基础上改的，hyperfox是go语言实现的一个http/https的透明代理。</p>
+<p>hyperfox本来是用 <code class="docutils literal"><span class="pre">upper.io/db</span></code> 这个orm将数据存入sqlite中的，我个人比较喜欢mongodb，于是就改成将数据存入mongodb中。</p>
+<div class="section" id="id4">
+<h3>依赖包安装<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-go"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">go</span> <span class="nx">get</span> <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">netxfly</span><span class="o">/</span><span class="nx">Transparent</span><span class="o">-</span><span class="nx">Proxy</span><span class="o">-</span><span class="nx">Scanner</span><span class="o">/</span><span class="nx">hyperfox</span>
+<span class="k">go</span> <span class="nx">get</span> <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">toolkits</span><span class="o">/</span><span class="nx">slice</span>
+<span class="k">go</span> <span class="nx">get</span> <span class="nx">upper</span><span class="p">.</span><span class="nx">io</span><span class="o">/</span><span class="nx">db</span>
+<span class="k">go</span> <span class="nx">get</span> <span class="nx">github</span><span class="p">.</span><span class="nx">com</span><span class="o">/</span><span class="nx">gorilla</span><span class="o">/</span><span class="nx">mux</span>
+<span class="k">go</span> <span class="nx">get</span> <span class="nx">menteslibres</span><span class="p">.</span><span class="nx">net</span><span class="o">/</span><span class="nx">gosexy</span><span class="o">/</span><span class="nx">to</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="id5">
+<h3>透明代理的部分实现代码<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-go"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;flag&quot;</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/proxy&quot;</span>
+    <span class="s">&quot;github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/tools/capture&quot;</span>
+    <span class="s">&quot;strings&quot;</span>
+    <span class="c1">// &quot;github.com/netxfly/Transparent-Proxy-Scanner/hyperfox/tools/logger&quot;</span>
+    <span class="s">&quot;github.com/toolkits/slice&quot;</span>
+    <span class="s">&quot;log&quot;</span>
+    <span class="s">&quot;net/http&quot;</span>
+    <span class="s">&quot;net/url&quot;</span>
+    <span class="s">&quot;os&quot;</span>
+    <span class="s">&quot;time&quot;</span>
+    <span class="s">&quot;upper.io/db&quot;</span>
+    <span class="s">&quot;upper.io/db/mongo&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">version</span> <span class="p">=</span> <span class="s">&quot;0.9&quot;</span>
+
+<span class="kd">const</span> <span class="p">(</span>
+    <span class="nx">defaultAddress</span> <span class="p">=</span> <span class="s">`0.0.0.0`</span>
+    <span class="nx">defaultPort</span>    <span class="p">=</span> <span class="nb">uint</span><span class="p">(</span><span class="mi">3129</span><span class="p">)</span>
+    <span class="nx">defaultSSLPort</span> <span class="p">=</span> <span class="nb">uint</span><span class="p">(</span><span class="mi">3128</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="kd">const</span> <span class="p">(</span>
+    <span class="nx">Host</span>     <span class="p">=</span> <span class="s">&quot;127.0.0.1&quot;</span>
+    <span class="nx">Port</span>     <span class="p">=</span> <span class="s">&quot;27017&quot;</span>
+    <span class="nx">User</span>     <span class="p">=</span> <span class="s">&quot;xsec&quot;</span>
+    <span class="nx">Password</span> <span class="p">=</span> <span class="s">&quot;x@xsec.io&quot;</span>
+    <span class="nx">Database</span> <span class="p">=</span> <span class="s">&quot;passive_scan&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">settings</span> <span class="p">=</span> <span class="nx">mongo</span><span class="p">.</span><span class="nx">ConnectionURL</span><span class="p">{</span>
+    <span class="nx">Address</span><span class="p">:</span>  <span class="nx">db</span><span class="p">.</span><span class="nx">Host</span><span class="p">(</span><span class="nx">Host</span><span class="p">),</span> <span class="c1">// MongoDB hostname.</span>
+    <span class="nx">Database</span><span class="p">:</span> <span class="nx">Database</span><span class="p">,</span>      <span class="c1">// Database name.</span>
+    <span class="nx">User</span><span class="p">:</span>     <span class="nx">User</span><span class="p">,</span>          <span class="c1">// Optional user name.</span>
+    <span class="nx">Password</span><span class="p">:</span> <span class="nx">Password</span><span class="p">,</span>      <span class="c1">// Optional user password.</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="p">(</span>
+    <span class="nx">flagAddress</span>     <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;l&quot;</span><span class="p">,</span> <span class="nx">defaultAddress</span><span class="p">,</span> <span class="s">&quot;Bind address.&quot;</span><span class="p">)</span>
+    <span class="nx">flagPort</span>        <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">Uint</span><span class="p">(</span><span class="s">&quot;p&quot;</span><span class="p">,</span> <span class="nx">defaultPort</span><span class="p">,</span> <span class="s">&quot;Port to bind to, default is 3129&quot;</span><span class="p">)</span>
+    <span class="nx">flagSSLPort</span>     <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">Uint</span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="p">,</span> <span class="nx">defaultSSLPort</span><span class="p">,</span> <span class="s">&quot;Port to bind to (SSL mode), default is 3128.&quot;</span><span class="p">)</span>
+    <span class="nx">flagSSLCertFile</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;Path to root CA certificate.&quot;</span><span class="p">)</span>
+    <span class="nx">flagSSLKeyFile</span>  <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;Path to root CA key.&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="kd">var</span> <span class="p">(</span>
+    <span class="nx">sess</span> <span class="nx">db</span><span class="p">.</span><span class="nx">Database</span>
+    <span class="nx">col</span>  <span class="nx">db</span><span class="p">.</span><span class="nx">Collection</span>
+<span class="p">)</span>
+
+<span class="kd">var</span> <span class="p">(</span>
+    <span class="nx">static_resource</span> <span class="p">[]</span><span class="kt">string</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;js&quot;</span><span class="p">,</span> <span class="s">&quot;css&quot;</span><span class="p">,</span> <span class="s">&quot;jpg&quot;</span><span class="p">,</span> <span class="s">&quot;gif&quot;</span><span class="p">,</span> <span class="s">&quot;png&quot;</span><span class="p">,</span> <span class="s">&quot;exe&quot;</span><span class="p">,</span> <span class="s">&quot;zip&quot;</span><span class="p">,</span> <span class="s">&quot;rar&quot;</span><span class="p">,</span> <span class="s">&quot;ico&quot;</span><span class="p">,</span>
+        <span class="s">&quot;gz&quot;</span><span class="p">,</span> <span class="s">&quot;7z&quot;</span><span class="p">,</span> <span class="s">&quot;tgz&quot;</span><span class="p">,</span> <span class="s">&quot;bmp&quot;</span><span class="p">,</span> <span class="s">&quot;pdf&quot;</span><span class="p">,</span> <span class="s">&quot;avi&quot;</span><span class="p">,</span> <span class="s">&quot;mp3&quot;</span><span class="p">,</span> <span class="s">&quot;mp4&quot;</span><span class="p">,</span> <span class="s">&quot;htm&quot;</span><span class="p">,</span> <span class="s">&quot;html&quot;</span><span class="p">,</span> <span class="s">&quot;shtml&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1">// dbsetup sets up the database.</span>
+<span class="kd">func</span> <span class="nx">dbsetup</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">err</span> <span class="kt">error</span>
+    <span class="c1">// Attemping to establish a connection to the database.</span>
+    <span class="nx">sess</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="nx">mongo</span><span class="p">.</span><span class="nx">Adapter</span><span class="p">,</span> <span class="nx">settings</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">sess</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="s">&quot;db.Open(): %q\n&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Pointing to the &quot;http_info&quot; table.</span>
+    <span class="nx">col</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">sess</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="s">&quot;http_info&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// filter function</span>
+<span class="kd">func</span> <span class="nx">filter</span><span class="p">(</span><span class="nx">content_type</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">raw_url</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="nx">ret</span> <span class="o">:=</span> <span class="kc">false</span>
+    <span class="k">if</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">Contains</span><span class="p">(</span><span class="nx">content_type</span><span class="p">,</span> <span class="s">&quot;text/plain&quot;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">Contains</span><span class="p">(</span><span class="nx">content_type</span><span class="p">,</span> <span class="s">&quot;application/x-gzip&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">url_parsed</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">Parse</span><span class="p">(</span><span class="nx">raw_url</span><span class="p">)</span>
+        <span class="nx">path</span> <span class="o">:=</span> <span class="nx">url_parsed</span><span class="p">.</span><span class="nx">Path</span>
+        <span class="nx">t</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">Split</span><span class="p">(</span><span class="nx">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&quot;.&quot;</span><span class="p">)</span>
+        <span class="nx">suffix</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">!</span><span class="nx">slice</span><span class="p">.</span><span class="nx">ContainsString</span><span class="p">(</span><span class="nx">static_resource</span><span class="p">,</span> <span class="nx">suffix</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">ret</span> <span class="p">=</span> <span class="kc">true</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">ret</span>
+<span class="p">}</span>
+
+<span class="c1">// Parses flags and initializes Hyperfox tool.</span>
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">err</span> <span class="kt">error</span>
+    <span class="kd">var</span> <span class="nx">sslEnabled</span> <span class="kt">bool</span>
+
+    <span class="c1">// Parsing command line flags.</span>
+    <span class="nx">flag</span><span class="p">.</span><span class="nx">Parse</span><span class="p">()</span>
+
+    <span class="c1">// Opening database.</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">dbsetup</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="s">&quot;db: %q&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Remember to close the database session.</span>
+    <span class="k">defer</span> <span class="nx">sess</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
+
+    <span class="c1">// Is SSL enabled?</span>
+    <span class="k">if</span> <span class="o">*</span><span class="nx">flagSSLPort</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="nx">flagSSLCertFile</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span> <span class="p">{</span>
+        <span class="nx">sslEnabled</span> <span class="p">=</span> <span class="kc">true</span>
+    <span class="p">}</span>
+
+    <span class="c1">// User requested SSL mode.</span>
+    <span class="k">if</span> <span class="nx">sslEnabled</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="o">*</span><span class="nx">flagSSLCertFile</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">{</span>
+            <span class="nx">flag</span><span class="p">.</span><span class="nx">Usage</span><span class="p">()</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">ErrMissingSSLCert</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="o">*</span><span class="nx">flagSSLKeyFile</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="p">{</span>
+            <span class="nx">flag</span><span class="p">.</span><span class="nx">Usage</span><span class="p">()</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="nx">ErrMissingSSLKey</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="nx">os</span><span class="p">.</span><span class="nx">Setenv</span><span class="p">(</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">EnvSSLCert</span><span class="p">,</span> <span class="o">*</span><span class="nx">flagSSLCertFile</span><span class="p">)</span>
+        <span class="nx">os</span><span class="p">.</span><span class="nx">Setenv</span><span class="p">(</span><span class="nx">proxy</span><span class="p">.</span><span class="nx">EnvSSLKey</span><span class="p">,</span> <span class="o">*</span><span class="nx">flagSSLKeyFile</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Creatig proxy.</span>
+    <span class="nx">p</span> <span class="o">:=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">NewProxy</span><span class="p">()</span>
+
+    <span class="c1">// Attaching logger.</span>
+    <span class="c1">// p.AddLogger(logger.Stdout{})</span>
+
+    <span class="c1">// Attaching capture tool.</span>
+    <span class="nx">res</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">capture</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+
+    <span class="nx">p</span><span class="p">.</span><span class="nx">AddBodyWriteCloser</span><span class="p">(</span><span class="nx">capture</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">res</span><span class="p">))</span>
+
+    <span class="c1">// Saving captured data with a goroutine.</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="k">select</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="nx">r</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">res</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nx">filter</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">ContentType</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">URL</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">// fmt.Println(r.Method, r.URL, r.ContentType)</span>
+                    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">col</span><span class="p">.</span><span class="nx">Append</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+                        <span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="nx">ErrDatabaseError</span><span class="p">.</span><span class="nx">Error</span><span class="p">(),</span> <span class="nx">err</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+
+    <span class="nx">cerr</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">)</span>
+
+    <span class="c1">// Starting proxy servers.</span>
+
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">Start</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;%s:%d&quot;</span><span class="p">,</span> <span class="o">*</span><span class="nx">flagAddress</span><span class="p">,</span> <span class="o">*</span><span class="nx">flagPort</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">cerr</span> <span class="o">&lt;-</span> <span class="nx">err</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+
+    <span class="k">if</span> <span class="nx">sslEnabled</span> <span class="p">{</span>
+        <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">StartTLS</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;%s:%d&quot;</span><span class="p">,</span> <span class="o">*</span><span class="nx">flagAddress</span><span class="p">,</span> <span class="o">*</span><span class="nx">flagSSLPort</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+                <span class="nx">cerr</span> <span class="o">&lt;-</span> <span class="nx">err</span>
+            <span class="p">}</span>
+        <span class="p">}()</span>
+    <span class="p">}</span>
+
+    <span class="nx">err</span> <span class="p">=</span> <span class="o">&lt;-</span><span class="nx">cerr</span>
+
+    <span class="nx">log</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="nx">ErrBindFailed</span><span class="p">.</span><span class="nx">Error</span><span class="p">(),</span> <span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, netxfly&lt;x@xsec.io&gt;.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
