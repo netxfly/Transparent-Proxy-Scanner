@@ -7,7 +7,7 @@
    contain the root `toctree` directive.
 
 基于vpn和透明代理的web漏洞扫描器的实现
-===================================
+============================================
 
 概述
 -----------
@@ -17,19 +17,19 @@
     用户连接vpn后访问网站时就会把网站的请求与响应信息保存到mongodb中，然后web扫描器从数据库中读取请求信息并进行扫描。
 
 架构说明
-------------
+------------------
 
 .. image:: transparent.png
 
 透明代理的实现
--------------
+----------------------
 
 透明代理是在 ``https://github.com/xiam/hyperfox`` 这个项目的基础上改的，hyperfox是go语言实现的一个http/https的透明代理。
 
 hyperfox本来是用 ``upper.io/db`` 这个orm将数据存入sqlite中的，我个人比较喜欢mongodb，于是就改成将数据存入mongodb中。
 
 依赖包安装
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -40,7 +40,7 @@ hyperfox本来是用 ``upper.io/db`` 这个orm将数据存入sqlite中的，我�
     go get menteslibres.net/gosexy/to
 
 透明代理的部分实现代码
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -223,4 +223,34 @@ hyperfox本来是用 ``upper.io/db`` 这个orm将数据存入sqlite中的，我�
 
         log.Fatalf(ErrBindFailed.Error(), err)
     }
+
+
+如何启动透明代理
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. 安装依赖包
+2. git clone ``https://github.com/netxfly/Transparent-Proxy-Scanner.git`` 到GOPATH目录下
+3. cd 到 ``$GOPATH/Transparent-Proxy-Scanner/hyperfox`` 目录下编译hyperfox，如下图所示：
+
+.. image:: 001.png
+
+4. 配置iptables，将80和443端口的请求分别转到透明代理的3129和3128端口，如下图所示：
+
+.. image:: 002.png
+
+透明代理抓取数据测试
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. 注释掉调试代码，启动透明代理，手机拨入vpn，打开微博客户端后发现已经可以抓取到数据了，如下图所示：
+
+.. image:: 003.png
+
+2. 去mongodb中再确认下数据是否入库，如下图所示：
+
+.. image:: 004.png
+
+确认数据已经入库，接下来就该 ``任务分发模块`` 和 ``任务执行模块`` 出场了，上一篇文章已经写过了，这里就不写了，详情请参考
+``基于代理的Web扫描器的简单实现`` : http://www.xsec.io/article/77/proxy_scanner.html
+
+
 
